@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import sleep from "../utils/sleep";
 import { SortMethods } from "../types/sortMethods";
 
@@ -18,12 +18,21 @@ export default function useSortVisualizer({
   const [swaps, setSwaps] = useState<number>(0);
   const [nums, setNums] = useState([...arr]);
   const [isSorting, setIsSorting] = useState(false);
+  const stopped = useRef(false);
+  useEffect(() => {
+    setNums([...arr]);
+  }, [arr]);
   let sort;
 
   const bubbleSort = async () => {
     setIsSorting(true);
+    stopped.current = false;
     for (let i = 0; i < nums.length - 1; i++) {
       for (let j = 0; j < nums.length - 1 - i; j++) {
+        if (stopped.current) {
+          setComparingIndices([null, null]);
+          return;
+        }
         setComparingIndices([j, j + 1]);
         setComparisons((prev) => prev + 1);
         await sleep(delayRef.current);
@@ -42,6 +51,7 @@ export default function useSortVisualizer({
   };
   const selectionSort = async () => {
     setIsSorting(true);
+    stopped.current = false;
     const nums = [...arr];
     let k, j;
 
@@ -50,7 +60,12 @@ export default function useSortVisualizer({
       j = i + 1;
 
       while (j < nums.length) {
+        if (stopped.current) {
+          setComparingIndices([null, null]);
+          return;
+        }
         setComparingIndices([j, k]);
+        setComparisons((prev) => prev + 1);
         await sleep(delayRef.current);
         if (nums[j] < nums[k]) k = j;
         j++;
@@ -58,6 +73,7 @@ export default function useSortVisualizer({
       const temp = nums[i];
       nums[i] = nums[k];
       nums[k] = temp;
+      setSwaps((prev) => prev + 1);
       setNums([...nums]);
       await sleep(delayRef.current);
     }
@@ -67,11 +83,16 @@ export default function useSortVisualizer({
 
   const insertionSort = async () => {
     setIsSorting(true);
+    stopped.current = false;
     const nums = [...arr];
     for (let i = 1; i < nums.length; i++) {
       let j = i;
       setComparisons((prev) => prev + 1);
       while (j > 0 && nums[j - 1] > nums[j]) {
+        if (stopped.current) {
+          setComparingIndices([null, null]);
+          return;
+        }
         setComparisons((prev) => prev + 1);
         setComparingIndices([j, j - 1]);
         await sleep(delayRef.current);
@@ -86,6 +107,16 @@ export default function useSortVisualizer({
     }
     setIsSorting(false);
     setComparingIndices([null, null]);
+  };
+
+  const stop = () => {
+    stopped.current = true;
+    setIsSorting(false);
+  };
+
+  const clearStats = () => {
+    setComparisons(0);
+    setSwaps(0);
   };
 
   switch (method) {
@@ -110,6 +141,6 @@ export default function useSortVisualizer({
 
   return [
     sort,
-    { comparingIndices, swaps, nums, comparisons, isSorting },
+    { comparingIndices, swaps, stop, nums, comparisons, isSorting, clearStats },
   ] as const;
 }
