@@ -9,7 +9,7 @@ function BarContainer({
     return nums.map((num, i) => (
       <div
         key={i}
-        className={`w-10 bg-blue-600`}
+        className={`w-10 bg-stone-600`}
         style={{
           height: `${num}%`,
           backgroundColor: comparingIndices.includes(i) ? "yellow" : "#2563eb",
@@ -18,7 +18,7 @@ function BarContainer({
     ));
   };
   return (
-    <div className="shadow border-b-black  w-3/4 h-3/4 flex items-end justify-evenly">
+    <div className="shadow border-b-black w-3/4 h-3/4 flex items-end justify-evenly">
       {generateBars()}
     </div>
   );

@@ -4,11 +4,11 @@ import { SortMethods } from "../types/sortMethods";
 
 export default function useSortVisualizer({
   arr,
-  delay,
+  delayRef,
   method,
 }: {
   arr: number[];
-  delay: number;
+  delayRef: React.MutableRefObject<number>;
   method: SortMethods;
 }) {
   const [comparingIndices, setComparingIndices] = useState<
@@ -17,27 +17,31 @@ export default function useSortVisualizer({
   const [comparisons, setComparisons] = useState<number>(0);
   const [swaps, setSwaps] = useState<number>(0);
   const [nums, setNums] = useState([...arr]);
+  const [isSorting, setIsSorting] = useState(false);
   let sort;
 
   const bubbleSort = async () => {
+    setIsSorting(true);
     for (let i = 0; i < nums.length - 1; i++) {
       for (let j = 0; j < nums.length - 1 - i; j++) {
         setComparingIndices([j, j + 1]);
         setComparisons((prev) => prev + 1);
-        await sleep(delay);
+        await sleep(delayRef.current);
         if (nums[j] > nums[j + 1]) {
           const temp = nums[j];
           nums[j] = nums[j + 1];
           nums[j + 1] = temp;
           setSwaps((prev) => prev + 1);
-          await sleep(delay);
+          await sleep(delayRef.current);
           setNums([...nums]);
         }
       }
     }
+    setIsSorting(false);
     setComparingIndices([null, null]);
   };
-  const selectionSort = async (arr: number[]) => {
+  const selectionSort = async () => {
+    setIsSorting(true);
     const nums = [...arr];
     let k, j;
 
@@ -47,7 +51,7 @@ export default function useSortVisualizer({
 
       while (j < nums.length) {
         setComparingIndices([j, k]);
-        await sleep(delay);
+        await sleep(delayRef.current);
         if (nums[j] < nums[k]) k = j;
         j++;
       }
@@ -55,12 +59,14 @@ export default function useSortVisualizer({
       nums[i] = nums[k];
       nums[k] = temp;
       setNums([...nums]);
-      await sleep(delay);
+      await sleep(delayRef.current);
     }
+    setIsSorting(false);
     setComparingIndices([null, null]);
   };
 
-  const insertionSort = async (arr: number[]) => {
+  const insertionSort = async () => {
+    setIsSorting(true);
     const nums = [...arr];
     for (let i = 1; i < nums.length; i++) {
       let j = i;
@@ -68,16 +74,17 @@ export default function useSortVisualizer({
       while (j > 0 && nums[j - 1] > nums[j]) {
         setComparisons((prev) => prev + 1);
         setComparingIndices([j, j - 1]);
-        await sleep(delay);
+        await sleep(delayRef.current);
         const temp = nums[j - 1];
         nums[j - 1] = nums[j];
         nums[j] = temp;
         setSwaps((prev) => prev + 1);
         j--;
         setNums([...nums]);
-        await sleep(delay);
+        await sleep(delayRef.current);
       }
     }
+    setIsSorting(false);
     setComparingIndices([null, null]);
   };
 
@@ -98,8 +105,11 @@ export default function useSortVisualizer({
     }
 
     default:
-      break;
+      throw new Error("Invalid sort method");
   }
 
-  return [sort, { comparingIndices, swaps, nums, comparisons }];
+  return [
+    sort,
+    { comparingIndices, swaps, nums, comparisons, isSorting },
+  ] as const;
 }
