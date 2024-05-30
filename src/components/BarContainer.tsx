@@ -9,7 +9,7 @@ function BarContainer({
     return nums.map((num, i) => (
       <div
         key={i}
-        className={`w-10 bg-stone-600 ${comparingIndices.includes(i) ? " bg-yellow-500 " : " bg-sky-700 "}`}
+        className={`w-4 md:w-7 sm:w-6 lg:w-9 ${comparingIndices.includes(i) ? " bg-yellow-500 " : " bg-sky-700 "}`}
         style={{
           height: `${num}%`,
         }}
