@@ -9,12 +9,15 @@ function BarContainer({
     return nums.map((num, i) => (
       <>
         <div
-          className={`group justify-center relative bg-sky-700 w-4 md:w-7 flex sm:w-6 lg:w-9 ${comparingIndices.includes(i) ? " bg-yellow-500 " : " bg-sky-700 "}`}
+          className="group relative bg-sky-700 w-4 md:w-7 flex sm:w-6 lg:w-9 "
           style={{
             height: `${num}%`,
           }}
         >
-          <div key={i} className={`hover:bg-sky-800 `}>
+          <div
+            key={i}
+            className={`w-4 md:w-7 flex  sm:w-6 lg:w-9 hover:bg-sky-900 ${comparingIndices.includes(i) ? " bg-yellow-500 " : " bg-sky-700 "}`}
+          >
             {
               // <button
               //   data-tooltip-target="tooltip-default"
