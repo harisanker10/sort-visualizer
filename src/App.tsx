@@ -14,8 +14,6 @@ function App() {
   const [timeDelay, setTimeDelay] = useState(delay.current);
   const [randomNums, setRandomNums] = useState(generateArray(barNum));
 
-  console.log({ windowWidth });
-
   const [
     sort,
     { comparingIndices, stop, isSorting, swaps, nums, comparisons, clearStats },
@@ -43,6 +41,7 @@ function App() {
     if (
       "bubble-sort" === e.target.value ||
       "selection-sort" === e.target.value ||
+      "quick-sort" === e.target.value ||
       "insertion-sort" === e.target.value
     ) {
       setSortMethod(e.target.value);

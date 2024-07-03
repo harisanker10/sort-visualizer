@@ -49,6 +49,7 @@ export default function useSortVisualizer({
     setIsSorting(false);
     setComparingIndices([null, null]);
   };
+
   const selectionSort = async () => {
     setIsSorting(true);
     stopped.current = false;
@@ -109,6 +110,77 @@ export default function useSortVisualizer({
     setComparingIndices([null, null]);
   };
 
+  const quickSort = async () => {
+    const nums = [...arr];
+    setIsSorting(true);
+    stopped.current = false;
+    const sort = async (
+      arr: number[],
+      l = 0,
+      h = arr.length - 1,
+    ): Promise<void> => {
+      const partition = async (
+        arr: number[],
+        l: number,
+        h: number,
+      ): Promise<number> => {
+        const pivot = l;
+        l++;
+        while (l < h) {
+          while (arr[l] <= arr[pivot]) {
+            setComparingIndices([l, pivot]);
+            setComparisons((prev) => prev + 1);
+            l++;
+          }
+          while (arr[h] > arr[pivot]) {
+            setComparingIndices([h, pivot]);
+            setComparisons((prev) => prev + 1);
+            h--;
+          }
+
+          setComparingIndices([l, h]);
+          setComparisons((prev) => prev + 1);
+          await sleep(delayRef.current);
+          if (l < h) {
+            setSwaps((prev) => prev + 1);
+            const temp = arr[l];
+            arr[l] = arr[h];
+            arr[h] = temp;
+            setNums([...nums]);
+            await sleep(delayRef.current);
+          }
+        }
+        setComparingIndices([l, h]);
+        setComparisons((prev) => prev + 1);
+        await sleep(delayRef.current);
+        setComparingIndices([h, pivot]);
+        setComparisons((prev) => prev + 1);
+        if (arr[h] < arr[pivot]) {
+          setSwaps((prev) => prev + 1);
+          const temp = arr[pivot];
+          arr[pivot] = arr[h];
+          arr[h] = temp;
+          setNums([...nums]);
+          await sleep(delayRef.current);
+          return h;
+        }
+        return h;
+      };
+
+      setComparingIndices([l, h]);
+      setComparisons((prev) => prev + 1);
+      await sleep(delayRef.current);
+      if (l < h) {
+        const partitionIndex = await partition(arr, l, h);
+        await sort(arr, l, partitionIndex - 1);
+        await sort(arr, partitionIndex + 1, h);
+      }
+    };
+    await sort(nums);
+    setIsSorting(false);
+    setComparingIndices([null, null]);
+  };
+
   const stop = () => {
     stopped.current = true;
     setIsSorting(false);
@@ -132,6 +204,10 @@ export default function useSortVisualizer({
 
     case "insertion-sort": {
       sort = insertionSort;
+      break;
+    }
+    case "quick-sort": {
+      sort = quickSort;
       break;
     }
 

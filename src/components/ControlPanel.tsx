@@ -52,6 +52,7 @@ const ControlPanel = ({
           <option value="bubble-sort">Bubble sort</option>
           <option value="selection-sort">Selection sort</option>
           <option value="insertion-sort">Insertion sort</option>
+          <option value="quick-sort">Quick sort</option>
         </select>
 
         <button
