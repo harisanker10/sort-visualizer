@@ -3,7 +3,7 @@ export async function onRequest(context) {
     const now = Date.now();
     const task = await context.env.analytics.put(
       `${now}`,
-      JSON.stringify(context),
+      JSON.stringify(context.request),
     );
     console.log({ task });
     return await context.next();
