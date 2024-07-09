@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   try {
-    console.log({ context });
-    const task = await context.env.sort_visualizer.get("name");
+    const now = Date.now();
+    const task = await context.env.analytics.put(`${now}`);
     console.log({ task });
     return await context.next();
   } catch (err) {
